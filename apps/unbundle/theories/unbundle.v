@@ -36,6 +36,43 @@ expand (primitive _ as C) C :- !.
 }}.
 
 From elpi.apps.unbundle.elpi Extra Dependency "unbundle.elpi" as unbundle.
-Elpi Command unbundle.expand.
+Elpi Command record.expand.
 Elpi Accumulate Db record.expand.db.
-Elpi Accumulate File 
+Elpi Accumulate File unbundle.
+
+Set Universe Polymorphism.
+Record r := { T :> Type; X := T; op : T -> X -> bool }.
+
+Definition f b (t : r) (q := negb b) := fix rec (l1 l2 : list t) :=
+  match l1, l2 with
+  | nil, nil => b
+  | cons x xs, cons y ys => andb (op _ x y) (rec xs ys)
+  | _, _ => q
+  end.
+
+Elpi record.expand r f "expanded_". 
+Print f.
+Print expanded_f.
+
+(* so that we can see the new "expand" clause *)
+Elpi Print record.expand "elpi_examples/record.expand".
+
+Definition g t l s h := (forall x y, op t x y = false) /\ f true t l s = h.
+
+Elpi record.expand r g "expanded_".
+
+(* 
+expanded_g =
+  fun T : Type =>
+  let X := T in
+  fun (op : T -> X -> bool) (l s : list T) (h : bool) =>
+  (forall (x : T) (y : X), op x y = false) /\
+  expanded_f true T op l s = h
+  : forall T : Type,
+        (T -> T -> bool) -> list T -> list T -> bool -> Prop
+
+Arguments expanded_g T%_type_scope op%_function_scope
+(l s)%_list_scope h%_bool_scope
+*)
+
+Print expanded_g.
