@@ -86,6 +86,13 @@
 -Q apps/rbuild/theories elpi.apps.rbuild
 -Q _build/default/apps/rbuild/theories elpi.apps.rbuild
 
+-Q apps/unbundle/elpi elpi.apps.unbundle.elpi
+-Q _build/default/apps/unbundle/elpi elpi.apps.unbundle.elpi
+-Q apps/unbundle/examples elpi.apps.unbundle.examples
+-Q _build/default/apps/unbundle/examples elpi.apps.unbundle.examples
+-Q apps/unbundle/theories elpi.apps.unbundle
+-Q _build/default/apps/unbundle/theories elpi.apps.unbundle
+
 # Cram tests.
 
 -Q tests elpi.tests
