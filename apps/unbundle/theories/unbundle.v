@@ -32,7 +32,6 @@ expand (fix N Rno Ty F) (fix N Rno Ty1 F1) :- !,
 expand (match T Rty B) (match T1 Rty1 B1) :- !,
   expand T T1, expand Rty Rty1, map B expand B1.
 expand (primitive _ as C) C :- !.
-
 }}.
 
 From elpi.apps.unbundle.elpi Extra Dependency "unbundle.elpi" as unbundle.
@@ -60,19 +59,4 @@ Elpi Print record.expand "elpi_examples/record.expand".
 Definition g t l s h := (forall x y, op t x y = false) /\ f true t l s = h.
 
 Elpi record.expand r g "expanded_".
-
-(* 
-expanded_g =
-  fun T : Type =>
-  let X := T in
-  fun (op : T -> X -> bool) (l s : list T) (h : bool) =>
-  (forall (x : T) (y : X), op x y = false) /\
-  expanded_f true T op l s = h
-  : forall T : Type,
-        (T -> T -> bool) -> list T -> list T -> bool -> Prop
-
-Arguments expanded_g T%_type_scope op%_function_scope
-(l s)%_list_scope h%_bool_scope
-*)
-
 Print expanded_g.
