@@ -131,8 +131,8 @@ expand-record R GR NGR X Y Clause :-
 % the data base, and that clause has to mention the name of the constant to be
 % generated. Since we don't know it yet (Coq tells us in response to coq.env.add-const)
 % we postulate a name for that constant "nc" and later replace it with the real one "NC"
-pred expand-gref i:inductive, i:gref, i:string, o:prop.
-expand-gref Record (const C) Name Clause :- !, std.do! [
+pred expand-gref i:inductive, i:gref, i:string, o:list prop.
+expand-gref Record (const C) Name [Clause] :- !, std.do! [
   std.assert! (coq.env.const C (some Bo) _) "only transparent constants can be expanded",
   (pi nc\ expand-record Record (const C) nc Bo NewBo (NClause nc)),
   std.assert-ok! (coq.typecheck NewBo _) "illtyped",
@@ -152,9 +152,12 @@ main [str R, str In, str Prefix] :- !,
   std.assert! (coq.locate In GR) "The second argument must be a global term",
   NewName is Prefix ^ {coq.gref->id GR},
 
-  expand-gref Record GR NewName Clause,
-
-  % We want our clauses to take precensence over the structural ones of "expand"
-  coq.elpi.accumulate _ "record.expand.db" (clause _ (before "expand:start") Clause).
+  expand-gref Record GR NewName ClauseList,
+  % We want our clauses to take precedence over the structural ones of "expand"
+  std.forall ClauseList
+  (Clause\
+  coq.elpi.accumulate _ "record.expand.db" (clause _ (before "expand:start") Clause)).
+  
+  
 
 main _ :- coq.error "usage: Elpi record.expand record_name global_term prefix".

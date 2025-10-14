@@ -32,6 +32,7 @@ expand (fix N Rno Ty F) (fix N Rno Ty1 F1) :- !,
 expand (match T Rty B) (match T1 Rty1 B1) :- !,
   expand T T1, expand Rty Rty1, map B expand B1.
 expand (primitive _ as C) C :- !.
+
 }}.
 
 From elpi.apps.unbundle.elpi Extra Dependency "unbundle.elpi" as unbundle.
@@ -60,3 +61,24 @@ Definition g t l s h := (forall x y, op t x y = false) /\ f true t l s = h.
 
 Elpi record.expand r g "expanded_".
 Print expanded_g.
+
+Record Graph@{u0 u1} := {
+  Ob : Type@{u0};
+  Arr : Ob -> Ob -> Type@{u1}
+}.
+
+Record GraphHom@{u0 u1 u2 u3} (G : Graph@{u0 u1}) (H : Graph@{u2 u3}) := {
+  F_ob : Ob G -> Ob H;
+  F_Hom : forall (x y : Ob G), Arr _ x y -> Arr _ (F_ob x) (F_ob y)
+}.
+
+Elpi record.expand GraphHom Graph "Unbundled".
+(* Want this to derive:
+Record UnbundledGraphHom@{u0 u1 u2 u3} (Ob_G : Type@{u0})
+  (Arr_G : forall (x y : Ob_G), Type@{u1})
+  (Ob_H : Type@{u2})
+  (Arr_H : forall (x y : Ob_H), Type@{u3}) := {
+    F_ob : Ob_G -> Ob_H;
+    F_Hom : forall (x y : Ob_G), Arr_G x y -> Arr_H (F_ob x) (F_ob y)
+  }.
+*)
